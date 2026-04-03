@@ -12,6 +12,8 @@ import { Messages } from './pages/Messages';
 import { Saved } from './pages/Saved';
 import { Profile } from './pages/Profile';
 import { Discover } from './pages/Discover';
+import { Notifications as NotificationsPage } from './pages/Notifications';
+import { EditProfile } from './pages/EditProfile';
 import NotFound from './pages/not-found';
 
 function Router() {
@@ -25,6 +27,8 @@ function Router() {
         <Route path="/messages" component={Messages} />
         <Route path="/saved" component={Saved} />
         <Route path="/profile" component={Profile} />
+        <Route path="/profile/edit" component={EditProfile} />
+        <Route path="/notifications" component={NotificationsPage} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>
