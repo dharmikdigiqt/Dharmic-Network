@@ -1,0 +1,144 @@
+**Objective:**
+Build a modern, scalable frontend for a web application based on the attached PRD and feature documents. The implementation should strictly follow the technical and architectural guidelines below.
+
+---
+
+## 🧱 Tech Stack & Core Requirements
+
+* **Framework:** React (latest stable version)
+* **Styling:** Tailwind CSS
+* **UI Library:** Mantine (latest version) — DO NOT create custom UI components unless absolutely necessary
+* **State Management:** Zustand
+* **URL State Management:** nuqs
+* **Notifications:** Sonner (for toast messages)
+* **Data Fetching:**
+
+  * Do NOT use React Query or any data fetching library for now
+  * All data is static
+
+---
+
+## 📦 Data Handling Rules
+
+* Do NOT integrate any backend or database
+* Do NOT create API calls
+* Store all static/mock data in **separate constants files**
+
+  * Example structure:
+
+    ```
+    /src/constants/
+      users.ts
+      products.ts
+      dashboard.ts
+    ```
+* Ensure data is modular and reusable across components
+
+---
+
+## 🎨 UI & Design System
+
+* Use **Mantine components everywhere**
+* Create a **global Mantine theme configuration file**
+
+  * Customize:
+
+    * Colors
+    * Typography
+    * Spacing
+    * Component variants (buttons, inputs, cards, etc.)
+* Apply the theme consistently across the app
+* Avoid inline styling unless necessary
+* Use Tailwind for layout and utility styling only
+
+---
+
+## 🧩 Architecture Guidelines
+
+* Follow a **scalable folder structure**:
+
+  ```
+  /src/
+    /components/
+    /pages/
+    /layouts/
+    /store/        (Zustand)
+    /constants/    (static data)
+    /hooks/
+    /utils/
+    /theme/        (Mantine theme config)
+  ```
+
+* Use **functional components only**
+
+* Use **hooks-based architecture**
+
+* Keep components small and reusable
+
+---
+
+## ⚙️ State Management
+
+* Use **Zustand** for global state where needed
+* Keep state minimal and well-structured
+* Avoid over-engineering since data is static
+
+---
+
+## 🔗 Routing & URL State
+
+* Use standard React routing (if needed)
+* Use **nuqs** for managing query parameters in the URL
+
+---
+
+## 🔔 Notifications
+
+* Use **Sonner toast** for:
+
+  * Success messages
+  * Errors
+  * User feedback
+
+---
+
+## 🖼️ Assets
+
+* Use the **attached logo** throughout the application:
+
+  * Header/Navbar
+  * Authentication pages (if any)
+* Do NOT ask for confirmation regarding logo usage — proceed directly
+
+---
+
+## 🚫 Restrictions
+
+* ❌ No backend integration
+* ❌ No database setup
+* ❌ No authentication logic (unless purely UI)
+* ❌ No React Query or API simulation
+* ❌ Do NOT build custom UI components if Mantine provides them
+
+---
+
+## ✅ Development Behavior Instructions
+
+* Do NOT ask for confirmations
+* Do NOT pause for clarifications
+* Start implementing immediately based on:
+
+  * PRD
+  * Feature documents
+* Make reasonable assumptions where needed and proceed
+
+---
+
+## 🎯 Output Expectations
+
+* Clean, production-ready frontend code
+* Fully functional UI with static data
+* Consistent design system using Mantine
+* Well-structured, maintainable codebase
+
+---
