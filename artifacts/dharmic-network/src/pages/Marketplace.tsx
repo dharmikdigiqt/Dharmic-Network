@@ -8,7 +8,6 @@ import {
   Group,
   Image,
   Input,
-  Select,
   SimpleGrid,
   Stack,
   Tabs,
@@ -92,19 +91,27 @@ export function Marketplace() {
             radius="xl"
             style={{ flex: 1 }}
           />
-          <Select
-            value={sort}
-            onChange={setSort}
-            data={[
-              { value: 'popular', label: 'Most Popular' },
-              { value: 'rating', label: 'Highest Rated' },
-              { value: 'price-low', label: 'Price: Low to High' },
-              { value: 'price-high', label: 'Price: High to Low' },
-            ]}
-            size="md"
-            radius="md"
-            style={{ width: 180 }}
-          />
+          <select
+            value={sort ?? 'popular'}
+            onChange={(e) => setSort(e.currentTarget.value)}
+            style={{
+              width: 180,
+              height: 42,
+              padding: '0 12px',
+              borderRadius: 8,
+              border: '1px solid #dee2e6',
+              fontSize: 14,
+              color: '#1a202c',
+              backgroundColor: '#fff',
+              cursor: 'pointer',
+              outline: 'none',
+            }}
+          >
+            <option value="popular">Most Popular</option>
+            <option value="rating">Highest Rated</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+          </select>
         </Group>
 
         {/* Category tabs */}

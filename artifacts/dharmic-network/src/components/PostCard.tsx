@@ -7,7 +7,6 @@ import {
   Group,
   Text,
   ActionIcon,
-  Tooltip,
   Box,
   Stack,
   Image,
@@ -223,88 +222,84 @@ export function PostCard({ post, index = 0 }: PostCardProps) {
         <Group justify="space-between" pt="sm" style={{ borderTop: '1px solid #f0f2f5' }}>
           <Group gap={4}>
             {/* Reactions */}
-            <Tooltip label="Truth">
-              <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}>
-                <UnstyledActionButton
-                  active={userReaction === 'truth'}
-                  activeColor="#ff8f0e"
-                  onClick={() => handleReaction('truth')}
-                >
-                  <IconSunHigh size={16} />
-                  <span style={{ fontSize: 12, fontWeight: 600 }}>{reactions.truth}</span>
-                </UnstyledActionButton>
-              </motion.div>
-            </Tooltip>
+            <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}>
+              <UnstyledActionButton
+                title="Truth"
+                active={userReaction === 'truth'}
+                activeColor="#ff8f0e"
+                onClick={() => handleReaction('truth')}
+              >
+                <IconSunHigh size={16} />
+                <span style={{ fontSize: 12, fontWeight: 600 }}>{reactions.truth}</span>
+              </UnstyledActionButton>
+            </motion.div>
 
-            <Tooltip label="Insight">
-              <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}>
-                <UnstyledActionButton
-                  active={userReaction === 'insight'}
-                  activeColor="#2d91ab"
-                  onClick={() => handleReaction('insight')}
-                >
-                  <IconFlame size={16} />
-                  <span style={{ fontSize: 12, fontWeight: 600 }}>{reactions.insight}</span>
-                </UnstyledActionButton>
-              </motion.div>
-            </Tooltip>
+            <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}>
+              <UnstyledActionButton
+                title="Insight"
+                active={userReaction === 'insight'}
+                activeColor="#2d91ab"
+                onClick={() => handleReaction('insight')}
+              >
+                <IconFlame size={16} />
+                <span style={{ fontSize: 12, fontWeight: 600 }}>{reactions.insight}</span>
+              </UnstyledActionButton>
+            </motion.div>
 
-            <Tooltip label="Dharmic Value">
-              <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}>
-                <UnstyledActionButton
-                  active={userReaction === 'dharmic'}
-                  activeColor="#4caf50"
-                  onClick={() => handleReaction('dharmic')}
-                >
-                  <IconStar size={16} />
-                  <span style={{ fontSize: 12, fontWeight: 600 }}>{reactions.dharmic}</span>
-                </UnstyledActionButton>
-              </motion.div>
-            </Tooltip>
+            <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}>
+              <UnstyledActionButton
+                title="Dharmic Value"
+                active={userReaction === 'dharmic'}
+                activeColor="#4caf50"
+                onClick={() => handleReaction('dharmic')}
+              >
+                <IconStar size={16} />
+                <span style={{ fontSize: 12, fontWeight: 600 }}>{reactions.dharmic}</span>
+              </UnstyledActionButton>
+            </motion.div>
           </Group>
 
           <Group gap={4}>
-            <Tooltip label="Comments">
-              <button style={{
+            <button
+              title="Comments"
+              style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 background: 'none', border: 'none', cursor: 'pointer',
                 color: '#718096', padding: '6px 8px', borderRadius: 8,
-              }}>
-                <IconMessageCircle size={16} />
-                <span style={{ fontSize: 12 }}>{post.comments}</span>
-              </button>
-            </Tooltip>
+              }}
+            >
+              <IconMessageCircle size={16} />
+              <span style={{ fontSize: 12 }}>{post.comments}</span>
+            </button>
 
-            <Tooltip label="Share">
+            <button
+              title="Share"
+              onClick={() => toast.success('Link copied to clipboard!')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: '#718096', padding: '6px 8px', borderRadius: 8,
+              }}
+            >
+              <IconShare size={16} />
+              <span style={{ fontSize: 12 }}>{post.shares}</span>
+            </button>
+
+            <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}>
               <button
-                onClick={() => toast.success('Link copied to clipboard!')}
+                title={isBookmarked ? 'Remove from Library' : 'Save to Gyan Library'}
+                onClick={handleBookmark}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   background: 'none', border: 'none', cursor: 'pointer',
-                  color: '#718096', padding: '6px 8px', borderRadius: 8,
+                  color: isBookmarked ? '#ff8f0e' : '#718096',
+                  padding: '6px 8px', borderRadius: 8,
                 }}
               >
-                <IconShare size={16} />
-                <span style={{ fontSize: 12 }}>{post.shares}</span>
+                {isBookmarked ? <IconBookmarkFilled size={16} /> : <IconBookmark size={16} />}
+                <span style={{ fontSize: 12 }}>{post.bookmarks + (isBookmarked ? 1 : 0)}</span>
               </button>
-            </Tooltip>
-
-            <Tooltip label={isBookmarked ? 'Remove from Library' : 'Save to Gyan Library'}>
-              <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}>
-                <button
-                  onClick={handleBookmark}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 6,
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    color: isBookmarked ? '#ff8f0e' : '#718096',
-                    padding: '6px 8px', borderRadius: 8,
-                  }}
-                >
-                  {isBookmarked ? <IconBookmarkFilled size={16} /> : <IconBookmark size={16} />}
-                  <span style={{ fontSize: 12 }}>{post.bookmarks + (isBookmarked ? 1 : 0)}</span>
-                </button>
-              </motion.div>
-            </Tooltip>
+            </motion.div>
           </Group>
         </Group>
       </Card>
@@ -317,15 +312,18 @@ function UnstyledActionButton({
   active,
   activeColor,
   onClick,
+  title,
 }: {
   children: React.ReactNode;
   active: boolean;
   activeColor: string;
   onClick: () => void;
+  title?: string;
 }) {
   return (
     <button
       onClick={onClick}
+      title={title}
       style={{
         display: 'flex', alignItems: 'center', gap: 6,
         background: active ? `${activeColor}15` : 'none',

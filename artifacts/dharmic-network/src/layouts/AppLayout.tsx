@@ -8,7 +8,6 @@ import {
   Group,
   Stack,
   Text,
-  Tooltip,
   UnstyledButton,
   Box,
   Indicator,
@@ -112,80 +111,79 @@ export function AppLayout({ children }: { children: ReactNode }) {
               const isActive = location === item.path || (item.path !== '/' && location.startsWith(item.path));
               return (
                 <Link key={item.path} href={item.path}>
-                  <Tooltip label={item.label} position="right" disabled={sidebarOpen}>
-                    <UnstyledButton
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                        padding: '10px 12px',
-                        borderRadius: 10,
-                        width: '100%',
-                        backgroundColor: isActive ? '#e8f5f7' : 'transparent',
-                        color: isActive ? '#1f8ba5' : '#4a5568',
-                        fontWeight: isActive ? 600 : 400,
-                        transition: 'all 0.15s ease',
-                        position: 'relative',
-                        overflow: 'hidden',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = '#f5f7fa';
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                      }}
-                    >
-                      {isActive && (
-                        <motion.div
-                          layoutId="activeNav"
-                          style={{
-                            position: 'absolute',
-                            left: 0,
-                            top: 0,
-                            bottom: 0,
-                            width: 3,
-                            backgroundColor: '#1f8ba5',
-                            borderRadius: '0 2px 2px 0',
-                          }}
-                        />
+                  <UnstyledButton
+                    title={!sidebarOpen ? item.label : undefined}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      padding: '10px 12px',
+                      borderRadius: 10,
+                      width: '100%',
+                      backgroundColor: isActive ? '#e8f5f7' : 'transparent',
+                      color: isActive ? '#1f8ba5' : '#4a5568',
+                      fontWeight: isActive ? 600 : 400,
+                      transition: 'all 0.15s ease',
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = '#f5f7fa';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeNav"
+                        style={{
+                          position: 'absolute',
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: 3,
+                          backgroundColor: '#1f8ba5',
+                          borderRadius: '0 2px 2px 0',
+                        }}
+                      />
+                    )}
+                    <div style={{ position: 'relative', flexShrink: 0 }}>
+                      <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                      {item.badge && item.badge > 0 && (
+                        <div style={{
+                          position: 'absolute',
+                          top: -4,
+                          right: -4,
+                          backgroundColor: '#ff8f0e',
+                          color: 'white',
+                          borderRadius: '50%',
+                          width: 14,
+                          height: 14,
+                          fontSize: 9,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 700,
+                        }}>
+                          {item.badge}
+                        </div>
                       )}
-                      <div style={{ position: 'relative', flexShrink: 0 }}>
-                        <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                        {item.badge && item.badge > 0 && (
-                          <div style={{
-                            position: 'absolute',
-                            top: -4,
-                            right: -4,
-                            backgroundColor: '#ff8f0e',
-                            color: 'white',
-                            borderRadius: '50%',
-                            width: 14,
-                            height: 14,
-                            fontSize: 9,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 700,
-                          }}>
-                            {item.badge}
-                          </div>
-                        )}
-                      </div>
-                      <AnimatePresence>
-                        {sidebarOpen && (
-                          <motion.span
-                            initial={{ opacity: 0, width: 0 }}
-                            animate={{ opacity: 1, width: 'auto' }}
-                            exit={{ opacity: 0, width: 0 }}
-                            transition={{ duration: 0.2 }}
-                            style={{ fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden' }}
-                          >
-                            {item.label}
-                          </motion.span>
-                        )}
-                      </AnimatePresence>
-                    </UnstyledButton>
-                  </Tooltip>
+                    </div>
+                    <AnimatePresence>
+                      {sidebarOpen && (
+                        <motion.span
+                          initial={{ opacity: 0, width: 0 }}
+                          animate={{ opacity: 1, width: 'auto' }}
+                          exit={{ opacity: 0, width: 0 }}
+                          transition={{ duration: 0.2 }}
+                          style={{ fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden' }}
+                        >
+                          {item.label}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </UnstyledButton>
                 </Link>
               );
             })}
@@ -195,29 +193,29 @@ export function AppLayout({ children }: { children: ReactNode }) {
         {/* Bottom section */}
         <Box p="xs" style={{ borderTop: '1px solid #e8ecf0' }}>
           {/* Collapse toggle */}
-          <Tooltip label={sidebarOpen ? 'Collapse' : 'Expand'} position="right">
-            <UnstyledButton
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: sidebarOpen ? 'flex-end' : 'center',
-                padding: '8px 12px',
-                width: '100%',
-                borderRadius: 8,
-                color: '#718096',
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = '#f5f7fa'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
-            >
-              {sidebarOpen ? <IconChevronLeft size={18} /> : <IconChevronRight size={18} />}
-            </UnstyledButton>
-          </Tooltip>
+          <UnstyledButton
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            title={sidebarOpen ? 'Collapse' : 'Expand'}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: sidebarOpen ? 'flex-end' : 'center',
+              padding: '8px 12px',
+              width: '100%',
+              borderRadius: 8,
+              color: '#718096',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = '#f5f7fa'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
+          >
+            {sidebarOpen ? <IconChevronLeft size={18} /> : <IconChevronRight size={18} />}
+          </UnstyledButton>
 
           {/* User avatar */}
           <Link href="/profile">
-            <Tooltip label={CURRENT_USER.name} position="right" disabled={sidebarOpen}>
-              <UnstyledButton style={{
+            <UnstyledButton
+              title={!sidebarOpen ? CURRENT_USER.name : undefined}
+              style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 10,
@@ -226,26 +224,25 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 width: '100%',
                 marginTop: 4,
               }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = '#f5f7fa'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
-              >
-                <Avatar src={CURRENT_USER.avatar} size={36} radius="xl" />
-                <AnimatePresence>
-                  {sidebarOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: 'auto' }}
-                      exit={{ opacity: 0, width: 0 }}
-                      transition={{ duration: 0.2 }}
-                      style={{ overflow: 'hidden' }}
-                    >
-                      <Text size="sm" fw={600} style={{ whiteSpace: 'nowrap', color: '#1a202c' }}>{CURRENT_USER.name}</Text>
-                      <Text size="xs" c="dimmed" style={{ whiteSpace: 'nowrap' }}>Karma: {CURRENT_USER.karmaScore} ✦</Text>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </UnstyledButton>
-            </Tooltip>
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = '#f5f7fa'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
+            >
+              <Avatar src={CURRENT_USER.avatar} size={36} radius="xl" />
+              <AnimatePresence>
+                {sidebarOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: 'auto' }}
+                    exit={{ opacity: 0, width: 0 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <Text size="sm" fw={600} style={{ whiteSpace: 'nowrap', color: '#1a202c' }}>{CURRENT_USER.name}</Text>
+                    <Text size="xs" c="dimmed" style={{ whiteSpace: 'nowrap' }}>Karma: {CURRENT_USER.karmaScore} ✦</Text>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </UnstyledButton>
           </Link>
         </Box>
       </motion.aside>
@@ -276,20 +273,16 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <div style={{ flex: 1 }} />
 
           <Group gap="sm">
-            <Tooltip label="Search">
-              <ActionIcon variant="subtle" color="gray" size="lg" radius="xl">
-                <IconSearch size={18} />
-              </ActionIcon>
-            </Tooltip>
+            <ActionIcon variant="subtle" color="gray" size="lg" radius="xl" title="Search">
+              <IconSearch size={18} />
+            </ActionIcon>
 
             <Link href="/notifications">
-              <Tooltip label="Notifications">
-                <Indicator disabled={notificationsCount === 0} label={notificationsCount} size={16} color="orange">
-                  <ActionIcon variant="subtle" color="gray" size="lg" radius="xl">
-                    <IconBell size={18} />
-                  </ActionIcon>
-                </Indicator>
-              </Tooltip>
+              <Indicator disabled={notificationsCount === 0} label={notificationsCount} size={16} color="orange">
+                <ActionIcon variant="subtle" color="gray" size="lg" radius="xl" title="Notifications">
+                  <IconBell size={18} />
+                </ActionIcon>
+              </Indicator>
             </Link>
 
             <Link href="/create">
