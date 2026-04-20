@@ -20,6 +20,7 @@ import {
   IconSunHigh,
 } from '@tabler/icons-react';
 import { Post } from '../constants/posts';
+import { getKarmaLevel } from '../constants/karma';
 import { useAppStore } from '../store';
 import { DharmicAvatar } from './DharmicAvatar';
 import { toast } from 'sonner';
@@ -32,6 +33,7 @@ interface PostCardProps {
 
 export function PostCard({ post, index = 0 }: PostCardProps) {
   const { bookmarkedPosts, toggleBookmark } = useAppStore();
+  const authorLevel = getKarmaLevel(post.authorKarma);
   const isBookmarked = bookmarkedPosts.includes(post.id);
   const [reactions, setReactions] = useState(post.reactions);
   const [userReaction, setUserReaction] = useState<string | null>(null);
@@ -103,8 +105,8 @@ export function PostCard({ post, index = 0 }: PostCardProps) {
             <Box>
               <Group gap={6}>
                 <Text size="sm" fw={700} style={{ color: '#1a202c' }}>{post.authorName}</Text>
-                <Badge size="xs" color="orange" variant="light" style={{ fontSize: 10 }}>
-                  ✦ {post.authorKarma}
+                <Badge size="xs" variant="dot" style={{ color: authorLevel.color, borderColor: authorLevel.color, fontSize: 10 }}>
+                  {authorLevel.name}
                 </Badge>
               </Group>
               <Group gap={6}>

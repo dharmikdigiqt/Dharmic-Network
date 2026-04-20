@@ -7,6 +7,7 @@ import {
   Group,
   Stack,
   Text,
+  Tooltip,
   UnstyledButton,
   Box,
   Indicator,
@@ -27,6 +28,7 @@ import {
 } from '@tabler/icons-react';
 import { DharmicLogo } from '../components/DharmicLogo';
 import { CURRENT_USER } from '../constants/users';
+import { getKarmaLevel } from '../constants/karma';
 import { useAppStore } from '../store';
 import { Toaster } from 'sonner';
 
@@ -51,6 +53,7 @@ const NAV_ITEMS: NavItem[] = [
 export function AppLayout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { notificationsCount, sidebarOpen, setSidebarOpen } = useAppStore();
+  const userLevel = getKarmaLevel(CURRENT_USER.karmaScore);
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8f9fc' }}>
@@ -233,8 +236,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     transition={{ duration: 0.2 }}
                     style={{ overflow: 'hidden' }}
                   >
-                    <Text size="sm" fw={600} style={{ whiteSpace: 'nowrap', color: '#1a202c' }}>{CURRENT_USER.name}</Text>
-                    <Text size="xs" c="dimmed" style={{ whiteSpace: 'nowrap' }}>Karma: {CURRENT_USER.karmaScore} ✦</Text>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Text size="sm" fw={600} style={{ whiteSpace: 'nowrap', color: '#1a202c' }}>{CURRENT_USER.name}</Text>
+                      {CURRENT_USER.streak && CURRENT_USER.streak > 0 && (
+                        <Tooltip label={`🔥 ${CURRENT_USER.streak}-day active streak`} position="right" withArrow>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 2, background: '#fff7ed', border: '1px solid #ff8f0e30', borderRadius: 10, padding: '1px 6px', cursor: 'default' }}>
+                            <span style={{ fontSize: 10 }}>🔥</span>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: '#d97706', whiteSpace: 'nowrap' }}>{CURRENT_USER.streak}</span>
+                          </div>
+                        </Tooltip>
+                      )}
+                    </div>
+                    <Text size="xs" fw={600} style={{ whiteSpace: 'nowrap', color: userLevel.color }}>{userLevel.name} · {CURRENT_USER.karmaScore} KP</Text>
                   </motion.div>
                 )}
               </AnimatePresence>

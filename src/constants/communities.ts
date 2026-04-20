@@ -14,6 +14,37 @@ export interface Community {
   createdDate: string;
 }
 
+export const COMMUNITY_MEMBERS: Record<string, Array<{ userId: string; kp: number }>> = {
+  c1: [
+    { userId: 'u4', kp: 1567 },
+    { userId: 'u2', kp: 1243 },
+    { userId: 'u1', kp: 847 },
+    { userId: 'u5', kp: 734 },
+    { userId: 'u3', kp: 312 },
+  ],
+  c2: [
+    { userId: 'u2', kp: 1243 },
+    { userId: 'u4', kp: 892 },
+    { userId: 'u6', kp: 456 },
+    { userId: 'u1', kp: 389 },
+    { userId: 'u7', kp: 234 },
+  ],
+  c3: [
+    { userId: 'u1', kp: 847 },
+    { userId: 'u5', kp: 734 },
+    { userId: 'u3', kp: 512 },
+    { userId: 'u2', kp: 298 },
+    { userId: 'u4', kp: 187 },
+  ],
+  c9: [
+    { userId: 'u3', kp: 967 },
+    { userId: 'u5', kp: 734 },
+    { userId: 'u1', kp: 523 },
+    { userId: 'u4', kp: 412 },
+    { userId: 'u2', kp: 356 },
+  ],
+};
+
 export const COMMUNITIES: Community[] = [
   {
     id: 'c1',
@@ -56,7 +87,7 @@ export const COMMUNITIES: Community[] = [
     category: 'Technology',
     isJoined: true,
     admins: ['u1'],
-    tags: ['Technology', 'Blockchain', 'AI', 'Web3'],
+    tags: ['Technology', 'OpenSource', 'AI', 'IndianTech'],
     isVerified: true,
     createdDate: '2024-01-01',
   },

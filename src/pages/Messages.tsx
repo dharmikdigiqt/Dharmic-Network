@@ -1,222 +1,222 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Card, Text, ThemeIcon } from "@mantine/core";
+import { IconMessage2, IconUsersGroup } from "@tabler/icons-react";
+import { COMMUNITIES } from "../constants/communities";
 import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Divider,
-  Group,
-  Input,
-  Stack,
-  Text,
-  Badge,
-  ActionIcon,
-  ThemeIcon,
-} from '@mantine/core';
-import { IconSearch, IconSend, IconMessage2, IconLock, IconMicrophone } from '@tabler/icons-react';
-import { USERS } from '../constants/users';
-import { toast } from 'sonner';
+  DM_MESSAGES, CHANNEL_MESSAGES, COMMUNITY_CHANNELS,
+  type DirectMessage, type ChannelMessage,
+} from "../constants/messages";
+import { USERS } from "../constants/users";
+import { useAppStore } from "../store";
+import { DmSidebar } from "../components/messages/DmSidebar";
+import { CommunitySidebar } from "../components/messages/CommunitySidebar";
+import { DmChat } from "../components/messages/DmChat";
+import { CommunityChat } from "../components/messages/CommunityChat";
+import { Show } from "../utilities/Show";
+import { toast } from "sonner";
 
-interface Message {
-  id: string;
-  senderId: string;
-  content: string;
-  timestamp: string;
-  isOwn: boolean;
-}
-
-const MOCK_MESSAGES: Record<string, Message[]> = {
-  u2: [
-    { id: '1', senderId: 'u2', content: 'Namaste! I saw your post about the decentralized identity system. Very inspiring work!', timestamp: '10:30 AM', isOwn: false },
-    { id: '2', senderId: 'u1', content: 'Namaste Dr. Priya! Thank you. Inspired by the Vasudhaiva Kutumbakam principle.', timestamp: '10:35 AM', isOwn: true },
-    { id: '3', senderId: 'u2', content: 'Would love to collaborate on integrating Prakruti profiles into the identity system.', timestamp: '10:37 AM', isOwn: false },
-    { id: '4', senderId: 'u1', content: 'That\'s a brilliant idea! Let\'s schedule a call.', timestamp: '10:40 AM', isOwn: true },
-  ],
-  u4: [
-    { id: '1', senderId: 'u4', content: 'Your question about Vedic Mathematics in the IKS community was excellent!', timestamp: 'Yesterday', isOwn: false },
-    { id: '2', senderId: 'u1', content: 'Thank you! I\'ve been studying the Sulba Sutras and their connection to modern geometry.', timestamp: 'Yesterday', isOwn: true },
-  ],
-};
-
-const CONVERSATIONS = [
-  { userId: 'u2', lastMessage: 'Let\'s schedule a call.', time: '10:40 AM', unread: 0 },
-  { userId: 'u4', lastMessage: 'I\'ve been studying the Sulba Sutras...', time: 'Yesterday', unread: 2 },
-  { userId: 'u3', lastMessage: 'Interested in your project!', time: 'Monday', unread: 0 },
-];
+type Mode = "direct" | "community";
 
 export function Messages() {
-  const [selectedUser, setSelectedUser] = useState<string | null>('u2');
-  const [newMessage, setNewMessage] = useState('');
-  const [messages, setMessages] = useState(MOCK_MESSAGES);
+  const { joinedCommunities } = useAppStore();
 
-  const selectedUserData = USERS.find(u => u.id === selectedUser);
-  const currentMessages = selectedUser ? (messages[selectedUser] || []) : [];
+  const [mode, setMode] = useState<Mode>("direct");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>("u2");
+  const [dmMessages, setDmMessages] = useState(DM_MESSAGES);
 
-  const sendMessage = () => {
-    if (!newMessage.trim() || !selectedUser) return;
-    const msg: Message = {
-      id: Date.now().toString(),
-      senderId: 'u1',
-      content: newMessage,
-      timestamp: 'Now',
-      isOwn: true,
-    };
-    setMessages(prev => ({
+  const [selectedCommunityId, setSelectedCommunityId] = useState<string | null>("c1");
+  const [selectedChannelId, setSelectedChannelId] = useState<string | null>("c1-general");
+  const [expandedCommunities, setExpandedCommunities] = useState<Set<string>>(new Set(["c1", "c3"]));
+  const [channelMessages, setChannelMessages] = useState(CHANNEL_MESSAGES);
+
+  const [dmInput, setDmInput] = useState("");
+  const [channelInput, setChannelInput] = useState("");
+
+  const selectedUserData = USERS.find(u => u.id === selectedUserId);
+  const currentDmMessages = selectedUserId ? (dmMessages[selectedUserId] ?? []) : [];
+
+  const selectedCommunity = COMMUNITIES.find(c => c.id === selectedCommunityId);
+  const selectedChannels = selectedCommunityId ? (COMMUNITY_CHANNELS[selectedCommunityId] ?? []) : [];
+  const selectedChannel = selectedChannelId ? selectedChannels.find(ch => ch.id === selectedChannelId) : null;
+  const currentChannelMessages = selectedChannelId ? (channelMessages[selectedChannelId] ?? []) : [];
+
+  function sendDm() {
+    if (!dmInput.trim() || !selectedUserId) return;
+    const msg: DirectMessage = { id: Date.now().toString(), senderId: "u1", content: dmInput, timestamp: "Now", isOwn: true };
+    setDmMessages(prev => ({ ...prev, [selectedUserId]: [...(prev[selectedUserId] ?? []), msg] }));
+    setDmInput("");
+    toast.success("Message sent!");
+  }
+
+  function sendChannelMessage() {
+    if (!channelInput.trim() || !selectedChannelId) return;
+    const msg: ChannelMessage = { id: Date.now().toString(), senderId: "u1", content: channelInput, timestamp: "Now", isOwn: true };
+    setChannelMessages(prev => ({ ...prev, [selectedChannelId]: [...(prev[selectedChannelId] ?? []), msg] }));
+    setChannelInput("");
+    toast.success("Message sent!");
+  }
+
+  function toggleReaction(messageId: string, emoji: string) {
+    if (!selectedChannelId) return;
+    setChannelMessages(prev => ({
       ...prev,
-      [selectedUser]: [...(prev[selectedUser] || []), msg],
+      [selectedChannelId]: (prev[selectedChannelId] ?? []).map(msg => {
+        if (msg.id !== messageId) return msg;
+        const reactions = msg.reactions ?? [];
+        const existing = reactions.find(r => r.emoji === emoji);
+        if (!existing) return { ...msg, reactions: [...reactions, { emoji, count: 1, reacted: true }] };
+        return {
+          ...msg,
+          reactions: reactions
+            .map(r => r.emoji === emoji ? { ...r, count: r.count + (r.reacted ? -1 : 1), reacted: !r.reacted } : r)
+            .filter(r => r.count > 0),
+        };
+      }),
     }));
-    setNewMessage('');
-    toast.success('Message sent!');
-  };
+  }
+
+  function toggleExpanded(id: string) {
+    setExpandedCommunities(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  function selectChannel(communityId: string, channelId: string) {
+    setSelectedCommunityId(communityId);
+    setSelectedChannelId(channelId);
+    setExpandedCommunities(prev => new Set([...prev, communityId]));
+  }
+
+  const activeCommunityContext = selectedCommunity && selectedChannel
+    ? { community: selectedCommunity, channel: selectedChannel }
+    : null;
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-      <Text size="xl" fw={800} style={{ color: '#1a202c' }} mb="md">Messages</Text>
+    <div className="max-w-[1100px] mx-auto">
+      <Text size="xl" fw={800} className="text-[#1a202c] mb-4">Messages</Text>
 
-      <Card radius="xl" style={{ border: '1px solid #e8ecf0', overflow: 'hidden', height: 600 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', height: '100%' }}>
-          {/* Conversations list */}
-          <Box style={{ borderRight: '1px solid #e8ecf0', display: 'flex', flexDirection: 'column' }}>
-            <Box p="md" style={{ borderBottom: '1px solid #e8ecf0' }}>
-              <Input
-                placeholder="Search messages..."
-                leftSection={<IconSearch size={14} />}
-                size="sm"
-                radius="xl"
-              />
-            </Box>
-            <div style={{ flex: 1, overflowY: 'auto' }}>
-              {CONVERSATIONS.map((conv) => {
-                const user = USERS.find(u => u.id === conv.userId);
-                if (!user) return null;
-                const isSelected = selectedUser === conv.userId;
-                return (
-                  <Box
-                    key={conv.userId}
-                    p="md"
-                    style={{
-                      cursor: 'pointer',
-                      backgroundColor: isSelected ? '#e8f5f7' : 'transparent',
-                      borderLeft: isSelected ? '3px solid #1f8ba5' : '3px solid transparent',
-                      transition: 'all 0.15s',
-                    }}
-                    onClick={() => setSelectedUser(conv.userId)}
-                  >
-                    <Group gap="sm">
-                      <Avatar src={user.avatar} size={42} radius="xl" />
-                      <Box style={{ flex: 1, minWidth: 0 }}>
-                        <Group justify="space-between">
-                          <Text size="sm" fw={600} style={{ color: '#1a202c' }}>{user.name}</Text>
-                          <Text size="xs" c="dimmed">{conv.time}</Text>
-                        </Group>
-                        <Group justify="space-between">
-                          <Text size="xs" c="dimmed" lineClamp={1}>{conv.lastMessage}</Text>
-                          {conv.unread > 0 && (
-                            <Badge size="xs" color="teal" variant="filled" circle>{conv.unread}</Badge>
-                          )}
-                        </Group>
-                      </Box>
-                    </Group>
-                  </Box>
-                );
-              })}
-            </div>
-          </Box>
+      <Card radius="xl" className="border border-[#e8ecf0] overflow-hidden h-[680px] p-0">
+        <div className="grid h-full" style={{ gridTemplateColumns: "300px 1fr" }}>
 
-          {/* Chat area */}
-          {selectedUserData ? (
-            <Box style={{ display: 'flex', flexDirection: 'column' }}>
-              {/* Header */}
-              <Box p="md" style={{ borderBottom: '1px solid #e8ecf0' }}>
-                <Group justify="space-between">
-                  <Group gap="sm">
-                    <Avatar src={selectedUserData.avatar} size={40} radius="xl" />
-                    <Box>
-                      <Text fw={700} size="sm">{selectedUserData.name}</Text>
-                      <Group gap={4}>
-                        <div style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#4caf50' }} />
-                        <Text size="xs" c="dimmed">Active now</Text>
-                      </Group>
-                    </Box>
-                  </Group>
-                  <Group gap={4}>
-                    <ThemeIcon size={28} radius="xl" variant="light" color="teal">
-                      <IconLock size={14} />
-                    </ThemeIcon>
-                    <Text size="xs" c="dimmed">E2E Encrypted</Text>
-                  </Group>
-                </Group>
-              </Box>
-
-              {/* Messages */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
-                <Stack gap="sm" p="md">
-                  {currentMessages.map((msg, i) => (
-                    <motion.div
-                      key={msg.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      style={{ display: 'flex', justifyContent: msg.isOwn ? 'flex-end' : 'flex-start' }}
+          <div className="border-r border-[#e8ecf0] flex flex-col bg-[#fafbfc] overflow-hidden">
+            <div className="px-4 pt-4 pb-3 border-b border-[#e8ecf0]">
+              <div className="flex flex-col gap-1">
+                {(["direct", "community"] as const).map(key => {
+                  const Icon = key === "direct" ? IconMessage2 : IconUsersGroup;
+                  const isActive = mode === key;
+                  return (
+                    <motion.button
+                      key={key}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setMode(key)}
+                      className="w-full text-left border-none cursor-pointer rounded-[10px] px-3 py-2 transition-all"
+                      style={{
+                        background: isActive ? "linear-gradient(135deg, #1f8ba5, #0e7891)" : "transparent",
+                        color: isActive ? "white" : "#718096",
+                      }}
                     >
-                      {!msg.isOwn && (
-                        <Avatar src={selectedUserData.avatar} size={28} radius="xl" mr={8} />
-                      )}
-                      <Box
-                        p="sm"
-                        style={{
-                          maxWidth: '70%',
-                          backgroundColor: msg.isOwn ? '#1f8ba5' : '#f0f2f5',
-                          borderRadius: msg.isOwn ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                          color: msg.isOwn ? 'white' : '#1a202c',
-                        }}
-                      >
-                        <Text size="sm" style={{ lineHeight: 1.5 }}>{msg.content}</Text>
-                        <Text size="xs" style={{ opacity: 0.7, marginTop: 4, textAlign: 'right' }}>{msg.timestamp}</Text>
-                      </Box>
-                    </motion.div>
-                  ))}
-                </Stack>
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className="w-7 h-7 rounded-[8px] flex items-center justify-center flex-shrink-0"
+                          style={{
+                            background: isActive ? "rgba(255,255,255,0.2)" : "#eef0f3",
+                            color: isActive ? "white" : "#2d91ab",
+                          }}
+                        >
+                          <Icon size={14} />
+                        </div>
+                        <div>
+                          <div className="text-[13px] font-semibold leading-tight">
+                            {key === "direct" ? "Direct Messages" : "Communities"}
+                          </div>
+                          <div
+                            className="text-[10px] leading-tight mt-[1px]"
+                            style={{ color: isActive ? "rgba(255,255,255,0.7)" : "#a0aec0" }}
+                          >
+                            {key === "direct" ? "Private conversations" : "Group channels"}
+                          </div>
+                        </div>
+                      </div>
+                    </motion.button>
+                  );
+                })}
               </div>
+            </div>
 
-              {/* Input */}
-              <Box p="md" style={{ borderTop: '1px solid #e8ecf0' }}>
-                <Group gap="sm">
-                  <ActionIcon size="lg" radius="xl" variant="subtle" color="gray">
-                    <IconMicrophone size={18} />
-                  </ActionIcon>
-                  <Input
-                    placeholder="Write a message..."
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.currentTarget.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') sendMessage(); }}
-                    style={{ flex: 1 }}
-                    radius="xl"
-                  />
-                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                    <ActionIcon
-                      size="lg"
-                      radius="xl"
-                      onClick={sendMessage}
-                      style={{ background: 'linear-gradient(135deg, #1f8ba5, #0e7891)', color: 'white' }}
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <AnimatePresence mode="wait">
+                <Show
+                  when={mode === "direct"}
+                  fallback={
+                    <CommunitySidebar
+                      key="community"
+                      joinedCommunityIds={joinedCommunities}
+                      selectedChannelId={selectedChannelId}
+                      expandedCommunities={expandedCommunities}
+                      onToggleExpand={toggleExpanded}
+                      onSelectChannel={selectChannel}
+                    />
+                  }
+                >
+                  <DmSidebar key="dm" selectedUserId={selectedUserId} onSelect={setSelectedUserId} />
+                </Show>
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <div className="flex flex-col bg-white overflow-hidden">
+            <AnimatePresence mode="wait">
+              <Show
+                when={mode === "direct"}
+                fallback={
+                  <motion.div key="community-panel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="flex flex-col h-full">
+                    <Show
+                      when={activeCommunityContext}
+                      fallback={
+                        <div className="flex items-center justify-center h-full">
+                          <div className="flex flex-col items-center gap-3">
+                            <ThemeIcon size={64} radius="xl" variant="light" style={{ color: "#2d91ab", background: "#e8f5f7" }}>
+                              <IconUsersGroup size={32} />
+                            </ThemeIcon>
+                            <Text fw={600} size="md" className="text-[#2d3748]">Select a community channel</Text>
+                            <Text c="dimmed" size="sm" className="text-center max-w-[240px] leading-relaxed">
+                              Choose a community and channel from the sidebar to start chatting
+                            </Text>
+                          </div>
+                        </div>
+                      }
                     >
-                      <IconSend size={16} />
-                    </ActionIcon>
+                      {({ community, channel }) => (
+                        <CommunityChat
+                          community={community}
+                          channel={channel}
+                          messages={currentChannelMessages}
+                          newMessage={channelInput}
+                          onNewMessage={setChannelInput}
+                          onSend={sendChannelMessage}
+                          onToggleReaction={toggleReaction}
+                        />
+                      )}
+                    </Show>
                   </motion.div>
-                </Group>
-              </Box>
-            </Box>
-          ) : (
-            <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-              <Stack align="center" gap="sm">
-                <ThemeIcon size={60} radius="xl" color="gray" variant="light">
-                  <IconMessage2 size={30} />
-                </ThemeIcon>
-                <Text c="dimmed">Select a conversation to start messaging</Text>
-              </Stack>
-            </Box>
-          )}
+                }
+              >
+                <motion.div key="dm-panel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="flex flex-col h-full">
+                  <DmChat
+                    user={selectedUserData}
+                    messages={currentDmMessages}
+                    newMessage={dmInput}
+                    onNewMessage={setDmInput}
+                    onSend={sendDm}
+                  />
+                </motion.div>
+              </Show>
+            </AnimatePresence>
+          </div>
+
         </div>
       </Card>
     </div>

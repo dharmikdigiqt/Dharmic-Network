@@ -13,6 +13,7 @@ export interface User {
   location: string;
   isVerified: boolean;
   joinedDate: string;
+  streak?: number;
 }
 
 export const CURRENT_USER: User = {
@@ -20,7 +21,7 @@ export const CURRENT_USER: User = {
   name: 'Arjun Sharma',
   username: 'arjun.sharma',
   bio: 'Dharmic developer & IKS enthusiast. Building tools for Bharat\'s renaissance.',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=arjun&backgroundColor=b6e3f4',
+  avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Destiny&backgroundColor=2d91ab',
   role: ['Creator', 'Developer'],
   prakruti: 'Pitta',
   karmaScore: 847,
@@ -30,6 +31,7 @@ export const CURRENT_USER: User = {
   location: 'Bengaluru, India',
   isVerified: true,
   joinedDate: '2024-01-15',
+  streak: 12,
 };
 
 export const USERS: User[] = [
@@ -38,7 +40,7 @@ export const USERS: User[] = [
     name: 'Dr. Priya Nair',
     username: 'priya.nair',
     bio: 'Ayurveda practitioner & researcher. Bridging ancient wisdom with modern healthcare.',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=priya&backgroundColor=ffd5dc',
+    avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=priya&backgroundColor=4caf50',
     role: ['Dharmic Leader', 'Creator'],
     prakruti: 'Vata-Pitta',
     karmaScore: 1243,
@@ -54,7 +56,7 @@ export const USERS: User[] = [
     name: 'Vikram Patel',
     username: 'vikram.patel',
     bio: 'Dharmic investor focused on sustainable businesses aligned with Indian values.',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=vikram&backgroundColor=c0aede',
+    avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=vikram&backgroundColor=ff8f0e',
     role: ['Investor'],
     prakruti: 'Pitta-Kapha',
     karmaScore: 967,
@@ -70,7 +72,7 @@ export const USERS: User[] = [
     name: 'Ananya Krishnan',
     username: 'ananya.krishnan',
     bio: 'Sanskrit scholar & Vedic mathematics teacher. Preserving IKS for future generations.',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ananya&backgroundColor=d1f7c4',
+    avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=ananya&backgroundColor=8b5cf6',
     role: ['Dharmic Leader', 'Learner'],
     prakruti: 'Vata',
     karmaScore: 1567,
@@ -86,7 +88,7 @@ export const USERS: User[] = [
     name: 'Rahul Gupta',
     username: 'rahul.gupta',
     bio: 'Climate scientist & social entrepreneur solving environmental challenges through Dharmic lens.',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=rahul&backgroundColor=b0e3f4',
+    avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=rahul&backgroundColor=f59e0b',
     role: ['Creator', 'Investor'],
     prakruti: 'Kapha',
     karmaScore: 734,
@@ -102,7 +104,7 @@ export const USERS: User[] = [
     name: 'Meera Devi',
     username: 'meera.devi',
     bio: 'Visual artist & storyteller. Weaving Dharmic narratives through contemporary art.',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=meera&backgroundColor=ffdfbf',
+    avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=meera&backgroundColor=e91e63',
     role: ['Creator'],
     prakruti: 'Vata-Kapha',
     karmaScore: 856,
@@ -118,7 +120,7 @@ export const USERS: User[] = [
     name: 'Suresh Iyer',
     username: 'suresh.iyer',
     bio: 'Dharmic lawyer helping social enterprises navigate the legal landscape.',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=suresh&backgroundColor=e0e7ff',
+    avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=suresh&backgroundColor=795548',
     role: ['Creator', 'Learner'],
     prakruti: 'Pitta',
     karmaScore: 623,

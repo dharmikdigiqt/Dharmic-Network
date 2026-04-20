@@ -11,25 +11,21 @@ import {
   Divider,
   Paper,
   ThemeIcon,
-  SimpleGrid,
   Badge,
 } from '@mantine/core';
 import {
   IconSparkles,
-  IconTrendingUp,
   IconUsers,
-  IconMessageCircle,
   IconFlame,
   IconChevronRight,
-  IconStar,
-  IconBookmark,
   IconBell,
   IconBellFilled,
   IconLeaf,
   IconAtom,
-  IconBulb,
   IconCompass,
   IconAward,
+  IconChevronDown,
+  IconChevronUp,
 } from '@tabler/icons-react';
 import { Link } from 'wouter';
 import { POSTS, COMMUNITIES_POSTS, TRENDING_POSTS } from '../constants/posts';
@@ -37,6 +33,7 @@ import { COMMUNITIES } from '../constants/communities';
 import { CURRENT_USER, USERS } from '../constants/users';
 import { DAILY_INSIGHTS, NOTIFICATIONS, ACTIVITY_STATS } from '../constants/dashboard';
 import { PostCard } from '../components/PostCard';
+import { Show } from '../utilities/Show';
 import { DharmicAvatar } from '../components/DharmicAvatar';
 import { useAppStore } from '../store';
 import { toast } from 'sonner';
@@ -53,7 +50,10 @@ const itemVariants = {
 export function Dashboard() {
   const { joinedCommunities, notificationsCount, markNotificationsRead, followedUsers, toggleFollow } = useAppStore();
   const [activeTab, setActiveTab] = useState<string | null>('for-you');
+  const [pillExpanded, setPillExpanded] = useState(false);
 
+  const dayIndex = new Date().getDate() % DAILY_INSIGHTS.length;
+  const todaysPill = DAILY_INSIGHTS[dayIndex];
   const insight = DAILY_INSIGHTS[0];
   const myCommunities = COMMUNITIES.filter(c => joinedCommunities.includes(c.id));
   const suggestedUsers = USERS.filter(u => u.id !== 'u1').slice(0, 3);
@@ -127,6 +127,75 @@ export function Dashboard() {
                 ))}
               </Group>
             </Paper>
+          </motion.div>
+
+          {/* Daily Knowledge Pill */}
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+            <Card
+              radius="xl"
+              style={{
+                background: 'linear-gradient(135deg, #fdf8f0 0%, #fef3e2 60%, #fdf0e8 100%)',
+                border: '1px solid #e8c87040',
+                cursor: 'pointer',
+              }}
+              onClick={() => setPillExpanded(v => !v)}
+            >
+              <Group justify="space-between" align="flex-start">
+                <Group gap={10}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: 10, flexShrink: 0,
+                    background: 'linear-gradient(135deg, #d4a843, #c49020)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <span style={{ fontSize: 16 }}>📿</span>
+                  </div>
+                  <div>
+                    <Group gap={8} mb={2}>
+                      <Text size="xs" fw={700} style={{ color: '#b8860b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        Today's Knowledge Pill
+                      </Text>
+                      <Badge size="xs" style={{ background: '#d4a84318', color: '#b8860b', border: '1px solid #d4a84330' }}>
+                        {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                      </Badge>
+                    </Group>
+                    <Text size="sm" fw={600} style={{ fontStyle: 'italic', color: '#2d3748', lineHeight: 1.5 }}>
+                      "{todaysPill.quote}"
+                    </Text>
+                    <Text size="xs" fw={500} style={{ color: '#d4a843' }} mt={2}>— {todaysPill.source}</Text>
+                  </div>
+                </Group>
+                <div style={{ color: '#a0aec0', flexShrink: 0, marginTop: 2 }}>
+                  {pillExpanded ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+                </div>
+              </Group>
+
+              <Show when={pillExpanded}>
+                <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid #e8c87035' }}>
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    <Box
+                      p="sm"
+                      style={{ flex: 1, borderRadius: 10, background: 'rgba(255,255,255,0.65)', border: '1px solid #d4a84322' }}
+                    >
+                      <Group gap={6} mb={4}>
+                        <IconAtom size={12} color="#2d91ab" />
+                        <Text size="xs" fw={700} c="dimmed" style={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>IKS Fact</Text>
+                      </Group>
+                      <Text size="xs" style={{ color: '#4a5568', lineHeight: 1.6 }}>{todaysPill.iksFact}</Text>
+                    </Box>
+                    <Box
+                      p="sm"
+                      style={{ flex: 1, borderRadius: 10, background: 'rgba(255,255,255,0.65)', border: '1px solid #d4a84322' }}
+                    >
+                      <Group gap={6} mb={4}>
+                        <IconLeaf size={12} color="#4caf50" />
+                        <Text size="xs" fw={700} c="dimmed" style={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>Prakruti Tip</Text>
+                      </Group>
+                      <Text size="xs" style={{ color: '#4a5568', lineHeight: 1.6 }}>{todaysPill.prakrutiTip}</Text>
+                    </Box>
+                  </div>
+                </div>
+              </Show>
+            </Card>
           </motion.div>
 
           {/* Feed tabs */}
